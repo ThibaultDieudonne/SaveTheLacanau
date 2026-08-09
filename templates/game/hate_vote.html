@@ -13,7 +13,8 @@
 
 {% else %}
 <p class="muted">
-    Vous pouvez voter contre un ou plusieurs joueurs que vous suspectez d'être des saboteurs.
+    Vous pouvez voter contre un ou plusieurs joueurs que vous suspectez d'être des saboteurs
+    (maximum <strong>{{ game.settings.max_hate_votes }}</strong> vote(s)).
     Vous pouvez aussi ne voter pour personne.
 </p>
 
@@ -22,7 +23,8 @@
         {% for p in votable_players %}
         <li>
             <label class="suspect-card">
-                <input type="checkbox" name="suspects" value="{{ p.name }}">
+                <input type="checkbox" name="suspects" value="{{ p.name }}"
+                       data-max-votes="{{ game.settings.max_hate_votes }}">
                 <span class="suspect-name">{{ p.name }}</span>
                 <span class="hate-count">{{ p.hate_counter }} 💢</span>
             </label>
@@ -35,4 +37,22 @@
     <button type="submit" class="btn btn-primary btn-full">Envoyer le vote</button>
 </form>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+(function () {
+    const maxVotes = {{ game.settings.max_hate_votes }};
+    const boxes = document.querySelectorAll('input[name="suspects"]');
+    boxes.forEach(function (box) {
+        box.addEventListener('change', function () {
+            const checked = document.querySelectorAll('input[name="suspects"]:checked').length;
+            boxes.forEach(function (b) {
+                if (!b.checked) b.disabled = checked >= maxVotes;
+            });
+        });
+    });
+})();
+</script>
 {% endblock %}

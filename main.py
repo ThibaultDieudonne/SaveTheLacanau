@@ -176,6 +176,7 @@ async def create_game(
     sabotage_threshold: int = Form(5),
     chill_threshold: int = Form(500),
     elimination_interval: int = Form(3),
+    max_hate_votes: int = Form(3),
 ):
     clean_names = [n.strip() for n in player_names if n.strip()]
     settings = {
@@ -187,6 +188,7 @@ async def create_game(
         "sabotage_threshold": sabotage_threshold,
         "chill_threshold": chill_threshold,
         "elimination_interval": elimination_interval,
+        "max_hate_votes": max_hate_votes,
     }
 
     errors = logic.validate_settings(settings, ACTIVITIES_DATA)
@@ -405,7 +407,7 @@ async def vote_suspicion(
     if player is None or player.is_eliminated:
         raise HTTPException(status_code=400)
 
-    game.current_day.hate_votes[player_name] = suspects
+    game.current_day.hate_votes[player_name] = suspects[:game.settings.get("max_hate_votes", 3)]
     game.current_day.hate_votes_submitted.add(player_name)
 
     active = logic.get_active_players(game)

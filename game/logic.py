@@ -217,7 +217,9 @@ def _resolve_activity_votes(da: DayActivityState) -> tuple:
     if was_sabotaged and task_obj:
         failure_reason = task_obj.failure_reason
     elif not was_sabotaged and task_obj:
-        chill_pts = sum(task_obj.points_per_player.get(p, 0) for p in da.players)
+        # Only players who voted for the winning task earn chill points
+        voters = [p for p, t in da.votes.items() if t == chosen]
+        chill_pts = sum(task_obj.points_per_player.get(p, 0) for p in voters)
 
     return chosen, was_sabotaged, failure_reason, chill_pts
 
@@ -299,12 +301,12 @@ def validate_settings(settings: dict, activities_data: list) -> list[str]:
     """Return list of error strings; empty list means valid."""
     errors = []
     player_names = [n.strip() for n in settings.get("player_names", []) if n.strip()]
-    if len(player_names) < 2:
-        errors.append("Il faut au moins 2 joueurs.")
+    if len(player_names) < 3:
+        errors.append("Il faut au moins 3 joueurs.")
 
     num_activities = settings.get("num_activities", 3)
-    if num_activities < 1:
-        errors.append("Le nombre d'activités doit être au moins 1.")
+    if num_activities < 2:
+        errors.append("Le nombre d'activités doit être au moins 2.")
     if num_activities > len(activities_data):
         errors.append(f"Le nombre d'activités ne peut pas dépasser {len(activities_data)}.")
 
@@ -336,5 +338,9 @@ def validate_settings(settings: dict, activities_data: list) -> list[str]:
         errors.append("Le max chill doit être au moins 1.")
     if settings.get("elimination_interval", 3) < 1:
         errors.append("L'intervalle d'élimination doit être au moins 1.")
+
+    max_hate_votes = settings.get("max_hate_votes", 3)
+    if max_hate_votes < 1:
+        errors.append("Le nombre maximum de votes de suspicion doit être au moins 1.")
 
     return errors

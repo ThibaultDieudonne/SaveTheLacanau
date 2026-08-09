@@ -8,31 +8,31 @@
           "name": "Plâtrée de pâtes",
           "failure_reason": "Quelqu’un a saboté le timer, et les pâtes sont trop cuites ! C’est Overcooked ici ouuuu ?",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Viennoiseries",
           "failure_reason": "On ne sait pas qui est allé les chercher, mais les viennoiseries datent de la veille, quelqu’un y a laissé une molaire dans le quignon de pain rassis…",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Salade de riz",
           "failure_reason": "Quelqu’un a mis les ingrédients laissés dans le frigo depuis le précédent Lacanau… Il n’y a pas assez de toilettes pour en assumer les conséquences.",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Poulet Frit",
           "failure_reason": "Quelqu’un a remis le gaz à fond pendant la cuisson ! Les délicieux morceaux de poulet ne sont plus que des charbons. Cette fois, on va devoir laisser ça.",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
        {
           "name": "Barbecue",
           "failure_reason": "La bonbonne de gaz était piégée ! L’explosion a failli mettre le feu à la maison, une chance qu’il n’y ai pas de blessé…",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         }
 
       ]
@@ -45,31 +45,31 @@
           "name": "Hamac",
           "failure_reason": "Les cordes d’attache étaient sciées ! La chute est rude",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Molkky",
           "failure_reason": "Les quilles étaient collées entre elles à la super glue ! Même en tomahawk, impossible de casser.",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Ti Punch",
           "failure_reason": "La bouteille de Clément est vide, il ne reste plus que de l’Opéra…",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Jouer avec Silex",
           "failure_reason": "Impossible de trouver les jouets interactifs ! Faute de mieux, il s’est rabattu sur vos molets",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Jeux de société",
           "failure_reason": "Vous vouliez jouer à Sauver Lacanau mais il a été remplacé par un Loup Garou. Vous passez un moment extrêmement C-tier",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         }
       ]
     },
@@ -81,31 +81,31 @@
           "name": "Vélo",
           "failure_reason": "Les pneus sont tous dégonflés ! Vous êtes arrivés à pédaler jusqu’à trouver une pompe à air, mais vous cuisses s’en souviendront demain… ",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Planche à voile",
           "failure_reason": "Quelqu’un a loué toutes les planches à voile juste avant votre arrivée, vous ressentez une forte envie de le goumer",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Catamaran",
           "failure_reason": "Vos bouts étaient sabotés ! Vous dessalez au milieu du lac et devez attendre 30 minutes que l’aide arrive",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Badminton",
           "failure_reason": "Un vilain smash finit dans le prunier, et vous vous faites attaquer par des frelons asiatiques !",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Surf",
           "failure_reason": "La météo maritime était faussée, des rouleaux de 2m50 s’écrasent inlassablement sur vous. Vous ne passerez pas (la barre).",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         }
       ]
     },
@@ -117,31 +117,31 @@
           "name": "Snack Le Barracuda",
           "failure_reason": "Tous les plats sont chargés comme jamais de sauce piquante ! Au moins dans Hot Ones les gens sont payés pour souffrir… ",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Shopping à Lacanau Océan",
           "failure_reason": "Vous ne trouvez que des boutiques hors de prix et des souvenirs… ‘J’aime Limoges’ ?!",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Restau Rooftop",
           "failure_reason": "Votre réservation a été modifiée, et l’on vous installe dans à côté du local poubelle de l’autre côté du bâtiment.",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Sunset à la plage du Lion",
           "failure_reason": "Quelqu’un a organisé un concours du plus gros tas de détritus sur la plage du Lion. C’est moche, ça pue et ça cache la vue sur le soleil couchant",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         },
         {
           "name": "Spa",
           "failure_reason": "Quelqu’un a inversé les thermostats entre les bains froids et le sauna ! Vous avez le choix entre un jacuzzi sans bulle et s'asseoir sur des planches de bois à 20°C… Spa très relaxant",
           "min_points_awarded": 1,
-          "max_points_awarded": 5
+          "max_points_awarded": 10
         }
       ]
     }

@@ -43,6 +43,7 @@ def _make_settings(
     sabotage_threshold=3,
     chill_threshold=100,
     elimination_interval=2,
+    max_hate_votes=3,
 ):
     return {
         "game_name": "Test",
@@ -53,6 +54,7 @@ def _make_settings(
         "sabotage_threshold": sabotage_threshold,
         "chill_threshold": chill_threshold,
         "elimination_interval": elimination_interval,
+        "max_hate_votes": max_hate_votes,
     }
 
 
@@ -73,7 +75,7 @@ class TestValidateSettings:
         assert errors == []
 
     def test_too_few_players(self):
-        s = _make_settings(player_names=["Solo"])
+        s = _make_settings(player_names=["Solo", "Duo"])
         errors = logic.validate_settings(s, ACTIVITIES_DATA)
         assert any("joueur" in e for e in errors)
 
@@ -83,7 +85,7 @@ class TestValidateSettings:
         assert any("activité" in e for e in errors)
 
     def test_num_activities_zero(self):
-        s = _make_settings(num_activities=0)
+        s = _make_settings(num_activities=1)
         errors = logic.validate_settings(s, ACTIVITIES_DATA)
         assert any("activité" in e for e in errors)
 
@@ -376,6 +378,7 @@ class TestHTTPPages:
                 "sabotage_threshold": "3",
                 "chill_threshold": "100",
                 "elimination_interval": "2",
+                "max_hate_votes": "3",
             },
             follow_redirects=False,
         )
@@ -383,18 +386,19 @@ class TestHTTPPages:
         assert "/rejoindre" in r.headers["location"]
 
     def test_create_game_invalid(self, client):
-        # Only 1 player name → our validation rejects it (FastAPI accepts the form)
+        # Only 2 player names → our validation rejects it (min is 3)
         r = client.post(
             "/nouvelle-partie",
             data={
                 "game_name": "TestGame",
-                "player_names": ["Solo"],
-                "num_activities": "1",
+                "player_names": ["Alice", "Bob"],
+                "num_activities": "2",
                 "num_saboteurs": "1",
                 "num_tasks": "2",
                 "sabotage_threshold": "3",
                 "chill_threshold": "100",
                 "elimination_interval": "2",
+                "max_hate_votes": "3",
             },
         )
         assert r.status_code == 200
