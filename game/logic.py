@@ -276,6 +276,10 @@ def process_elimination(game: GameState) -> tuple[str, bool]:
         return None, False
 
     max_hate = max(p.hate_counter for p in active)
+    if max_hate == 0:
+        # No votes cast — skip elimination entirely
+        return None, False
+
     top = [p for p in active if p.hate_counter == max_hate]
     target = random.choice(top)
 

@@ -16,7 +16,7 @@
     {% if result.was_sabotaged and result.failure_reason %}
     <div class="result-reason muted">{{ result.failure_reason }}</div>
     {% elif not result.was_sabotaged %}
-    <div class="result-points">+{{ result.chill_points }} pts chill 🌊</div>
+    <div class="result-points">+{{ result.chill_points }} points de chill 🌊</div>
     {% endif %}
 </div>
 {% endfor %}

@@ -31,7 +31,7 @@
         {% if player.role == 'saboteur' %}
         <div class="role-badge role-saboteur">Saboteur</div>
         <div class="saboteur-team">
-            Vos complices :
+            Les complices :
             {% for s in game.saboteurs %}
             <span class="badge badge-danger">{{ s }}</span>
             {% endfor %}

@@ -414,10 +414,13 @@ async def vote_suspicion(
     if game.current_day.hate_votes_submitted >= {p.name for p in active}:
         logic.apply_hate_votes(game)
         if logic.should_eliminate(game):
-            logic.process_elimination(game)
-            won, winner, msg = logic.check_win_condition(game)
-            if won:
-                logic.set_game_over(game, winner, msg)
+            name, _ = logic.process_elimination(game)
+            if name is None:
+                _advance_to_next_day(game)
+            else:
+                won, winner, msg = logic.check_win_condition(game)
+                if won:
+                    logic.set_game_over(game, winner, msg)
         else:
             _advance_to_next_day(game)
         await _broadcast_refresh(game_id)
@@ -457,10 +460,13 @@ async def continue_after_elimination(game_id: str, player_name: str):
 
 def _advance_to_next_day_or_elimination(game: GameState) -> None:
     if logic.should_eliminate(game):
-        logic.process_elimination(game)
-        won, winner, msg = logic.check_win_condition(game)
-        if won:
-            logic.set_game_over(game, winner, msg)
+        name, _ = logic.process_elimination(game)
+        if name is None:
+            _advance_to_next_day(game)
+        else:
+            won, winner, msg = logic.check_win_condition(game)
+            if won:
+                logic.set_game_over(game, winner, msg)
     else:
         _advance_to_next_day(game)
 
