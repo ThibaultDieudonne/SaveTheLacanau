@@ -309,10 +309,15 @@ def validate_settings(settings: dict, activities_data: list) -> list[str]:
         errors.append(f"Le nombre d'activités ne peut pas dépasser {len(activities_data)}.")
 
     num_saboteurs = settings.get("num_saboteurs", 2)
-    max_saboteurs = max(1, len(player_names) - num_activities)
+    max_saboteurs = len(player_names) - num_activities
     if num_saboteurs < 1:
         errors.append("Il faut au moins 1 saboteur.")
-    if num_saboteurs > max_saboteurs:
+    if max_saboteurs < 1:
+        errors.append(
+            "Il n'y a pas assez de joueurs pour avoir un saboteur avec ce nombre d'activités "
+            "(il faut au moins autant de joueurs que d'activités + 1)."
+        )
+    elif num_saboteurs > max_saboteurs:
         errors.append(
             f"Le nombre de saboteurs ne peut pas dépasser {max_saboteurs} "
             "(nombre de joueurs − nombre d'activités)."
