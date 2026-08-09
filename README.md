@@ -25,6 +25,11 @@ Kill the local process:
 Get-Process | Where-Object { $_.Name -like "python*" } | Stop-Process -Force
 ```
 
+Run tests:
+```bash
+python3 -m pytest tests.py -v
+```
+
 **Production**
 ```bash
 uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1

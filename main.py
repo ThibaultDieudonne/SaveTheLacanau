@@ -89,7 +89,6 @@ def _render_game_page(request: Request, game_id: str, player_name: str):
     chill_threshold = game.settings.get("chill_threshold", 500)
 
     ctx = {
-        "request": request,
         "game": game,
         "player": player,
         "player_name": player_name,
@@ -103,9 +102,9 @@ def _render_game_page(request: Request, game_id: str, player_name: str):
     phase = game.phase
 
     if phase == PHASE_LOBBY:
-        return templates.TemplateResponse("game/lobby.html", ctx)
+        return templates.TemplateResponse(request, "game/lobby.html", ctx)
     if phase == PHASE_DAY_START:
-        return templates.TemplateResponse("game/day_start.html", ctx)
+        return templates.TemplateResponse(request, "game/day_start.html", ctx)
     if phase == PHASE_ACTIVITY_TIME:
         day = game.current_day
         # find this player's activity and its state
@@ -113,9 +112,9 @@ def _render_game_page(request: Request, game_id: str, player_name: str):
         player_activity = day.activities.get(player_activity_name) if player_activity_name else None
         ctx["player_activity_name"] = player_activity_name
         ctx["player_activity"] = player_activity
-        return templates.TemplateResponse("game/activity_time.html", ctx)
+        return templates.TemplateResponse(request, "game/activity_time.html", ctx)
     if phase == PHASE_DAY_RESULTS:
-        return templates.TemplateResponse("game/day_results.html", ctx)
+        return templates.TemplateResponse(request, "game/day_results.html", ctx)
     if phase == PHASE_HATE_VOTE:
         # players that can be voted against: active, non-eliminated, not self
         votable = [
@@ -123,11 +122,11 @@ def _render_game_page(request: Request, game_id: str, player_name: str):
             if p.name != player_name
         ]
         ctx["votable_players"] = votable
-        return templates.TemplateResponse("game/hate_vote.html", ctx)
+        return templates.TemplateResponse(request, "game/hate_vote.html", ctx)
     if phase == PHASE_ELIMINATION:
-        return templates.TemplateResponse("game/elimination.html", ctx)
+        return templates.TemplateResponse(request, "game/elimination.html", ctx)
     if phase == PHASE_GAME_OVER:
-        return templates.TemplateResponse("game/game_over.html", ctx)
+        return templates.TemplateResponse(request, "game/game_over.html", ctx)
 
     raise HTTPException(status_code=500, detail="Phase inconnue")
 
@@ -142,7 +141,7 @@ async def _broadcast_refresh(game_id: str) -> None:
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(request, "index.html", {})
 
 
 # ---------------------------------------------------------------------------
@@ -157,8 +156,7 @@ async def new_game_page(request: Request, config_id: Optional[str] = None):
         prefill = next((c for c in configs if c["config_id"] == config_id), None)
 
     min_tasks_possible = min(len(a["tasks"]) for a in ACTIVITIES_DATA)
-    return templates.TemplateResponse("new_game.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "new_game.html", {
         "saved_configs": configs,
         "prefill": prefill,
         "num_activities_in_json": len(ACTIVITIES_DATA),
@@ -195,8 +193,7 @@ async def create_game(
         if not settings["game_name"]:
             errors.insert(0, "Le nom de la partie est obligatoire.")
         min_tasks_possible = min(len(a["tasks"]) for a in ACTIVITIES_DATA)
-        return templates.TemplateResponse("new_game.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "new_game.html", {
             "errors": errors,
             "saved_configs": _load_saved_configs(),
             "prefill": settings,
@@ -218,15 +215,14 @@ async def create_game(
 
 @app.get("/rejoindre-partie", response_class=HTMLResponse)
 async def join_game_page(request: Request):
-    return templates.TemplateResponse("join_game.html", {"request": request})
+    return templates.TemplateResponse(request, "join_game.html", {})
 
 
 @app.post("/rejoindre-partie", response_class=HTMLResponse)
 async def join_game(request: Request, game_id: str = Form(...)):
     game = manager.get_game(game_id.strip())
     if game is None:
-        return templates.TemplateResponse("join_game.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "join_game.html", {
             "error": "Aucune partie active avec cet identifiant.",
         })
     return RedirectResponse(f"/parties/{game_id.strip()}/rejoindre", status_code=303)
@@ -238,8 +234,7 @@ async def join_game(request: Request, game_id: str = Form(...)):
 
 @app.get("/terminer-partie", response_class=HTMLResponse)
 async def terminate_page(request: Request):
-    return templates.TemplateResponse("terminate.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "terminate.html", {
         "games": manager.list_games(),
     })
 
@@ -259,8 +254,7 @@ async def player_select_page(request: Request, game_id: str):
     game = manager.get_game(game_id)
     if game is None:
         raise HTTPException(status_code=404, detail="Partie introuvable")
-    return templates.TemplateResponse("player_select.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "player_select.html", {
         "game": game,
         "game_id": game_id,
     })
