@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-scroll">
+    <div class="card">
+        <a class="back-link" href="/">← Accueil</a>
+        <h2>Nouvelle Partie</h2>
+
+        {% if errors %}
+        <div class="alert alert-error">
+            {% for e in errors %}<p>{{ e }}</p>{% endfor %}
+        </div>
+        {% endif %}
+
+        {% if saved_configs %}
+        <details class="config-loader">
+            <summary class="btn btn-outline btn-sm">Charger depuis une configuration existante</summary>
+            <ul class="config-list">
+                {% for cfg in saved_configs %}
+                <li>
+                    <a href="/nouvelle-partie?config_id={{ cfg.config_id }}">
+                        <strong>{{ cfg.game_name }}</strong>
+                        <span class="muted">— {{ cfg.player_names | join(', ') }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </details>
+        {% endif %}
+
+        <form method="post" action="/nouvelle-partie">
+            <div class="form-group">
+                <label for="game_name">Nom de la partie</label>
+                <input type="text" id="game_name" name="game_name"
+                       value="{{ prefill.game_name if prefill else '' }}"
+                       required placeholder="Ex : Lacanau Été 2025">
+            </div>
+
+            <fieldset class="form-group">
+                <legend>Joueurs</legend>
+                <div id="players-list">
+                    {% if prefill and prefill.player_names %}
+                        {% for name in prefill.player_names %}
+                        <div class="player-row">
+                            <input type="text" name="player_names" value="{{ name }}" placeholder="Nom du joueur">
+                            <button type="button" class="btn btn-sm btn-danger remove-player">Supprimer</button>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="player-row">
+                            <input type="text" name="player_names" placeholder="Nom du joueur">
+                            <button type="button" class="btn btn-sm btn-danger remove-player">Supprimer</button>
+                        </div>
+                    {% endif %}
+                </div>
+                <button type="button" id="add-player" class="btn btn-sm btn-outline">+ Ajouter Joueur</button>
+            </fieldset>
+
+            <fieldset class="form-group">
+                <legend>Paramètres</legend>
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label>Activités disponibles
+                            <span class="muted">(1 – {{ num_activities_in_json }})</span>
+                        </label>
+                        <input type="number" name="num_activities" min="1" max="{{ num_activities_in_json }}"
+                               value="{{ prefill.num_activities if prefill else 3 }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre de saboteurs
+                            <span class="muted">(min 1)</span>
+                        </label>
+                        <input type="number" name="num_saboteurs" min="1"
+                               value="{{ prefill.num_saboteurs if prefill else 2 }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Tâches par activité
+                            <span class="muted">(2 – {{ min_tasks_possible }})</span>
+                        </label>
+                        <input type="number" name="num_tasks" min="2" max="{{ min_tasks_possible }}"
+                               value="{{ prefill.num_tasks if prefill else 3 }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre de tâches à saboter
+                            <span class="muted">(min 1)</span>
+                        </label>
+                        <input type="number" name="sabotage_threshold" min="1"
+                               value="{{ prefill.sabotage_threshold if prefill else 5 }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Max Chill
+                            <span class="muted">(min 1)</span>
+                        </label>
+                        <input type="number" name="chill_threshold" min="1"
+                               value="{{ prefill.chill_threshold if prefill else 500 }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Intervalle d'élimination
+                            <span class="muted">(jours, min 1)</span>
+                        </label>
+                        <input type="number" name="elimination_interval" min="1"
+                               value="{{ prefill.elimination_interval if prefill else 3 }}">
+                    </div>
+                </div>
+            </fieldset>
+
+            <button type="submit" class="btn btn-primary btn-full">Démarrer la partie</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('add-player').addEventListener('click', function () {
+        const list = document.getElementById('players-list');
+        const row = document.createElement('div');
+        row.className = 'player-row';
+        row.innerHTML = '<input type="text" name="player_names" placeholder="Nom du joueur">'
+            + '<button type="button" class="btn btn-sm btn-danger remove-player">Supprimer</button>';
+        list.appendChild(row);
+        row.querySelector('input').focus();
+    });
+
+    document.getElementById('players-list').addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-player')) {
+            const rows = document.querySelectorAll('.player-row');
+            if (rows.length > 1) {
+                e.target.closest('.player-row').remove();
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-center">
+    <div class="card">
+        <div class="wave-icon">🌊</div>
+        <h2>{{ game.game_name }}</h2>
+        <p class="muted">Code : <strong>{{ game_id }}</strong></p>
+        <p>Bienvenue, <strong>{{ player_name }}</strong> !</p>
+        <p class="muted">En attente que tous les joueurs rejoignent…</p>
+
+        <div class="player-join-list">
+            {% for name in game.players %}
+            <div class="player-join-row">
+                <span>{{ name }}</span>
+                {% if name in game.players_joined %}
+                <span class="badge badge-success">Prêt</span>
+                {% else %}
+                <span class="badge badge-muted">En attente</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <p class="muted hint">La partie démarrera automatiquement quand tous les joueurs auront rejoint.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    const gameId = "{{ game_id }}";
+    const playerName = "{{ player_name }}";
+    let ws;
+    function connect() {
+        ws = new WebSocket("ws://" + location.host + "/ws/" + gameId + "/" + encodeURIComponent(playerName));
+        ws.onmessage = function (e) {
+            try {
+                const msg = JSON.parse(e.data);
+                if (msg.type === "refresh") window.location.reload();
+            } catch (_) {}
+        };
+        ws.onclose = function () { setTimeout(connect, 2000); };
+    }
+    connect();
+})();
+</script>
+{% endblock %}

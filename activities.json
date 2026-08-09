@@ -1,0 +1,31 @@
+{
+  "activities": [
+    {
+      "name": "Activity_1",
+      "special_role": "Master of Activity_1",
+      "tasks": [
+        {"name": "Task_1", "failure_reason": "Task_1 was sabotaged", "min_points_awarded": 10, "max_points_awarded": 50},
+        {"name": "Task_2", "failure_reason": "Task_2 was sabotaged", "min_points_awarded": 20, "max_points_awarded": 70},
+        {"name": "Task_3", "failure_reason": "Task_3 was sabotaged", "min_points_awarded": 30, "max_points_awarded": 80}
+      ]
+    },
+    {
+      "name": "Activity_2",
+      "special_role": "Master of Activity_2",
+      "tasks": [
+        {"name": "Task_1", "failure_reason": "Task_1 was sabotaged", "min_points_awarded": 10, "max_points_awarded": 50},
+        {"name": "Task_2", "failure_reason": "Task_2 was sabotaged", "min_points_awarded": 20, "max_points_awarded": 70},
+        {"name": "Task_3", "failure_reason": "Task_3 was sabotaged", "min_points_awarded": 30, "max_points_awarded": 80}
+      ]
+    },
+    {
+      "name": "Activity_3",
+      "special_role": "Master of Activity_3",
+      "tasks": [
+        {"name": "Task_1", "failure_reason": "Task_1 was sabotaged", "min_points_awarded": 10, "max_points_awarded": 50},
+        {"name": "Task_2", "failure_reason": "Task_2 was sabotaged", "min_points_awarded": 20, "max_points_awarded": 70},
+        {"name": "Task_3", "failure_reason": "Task_3 was sabotaged", "min_points_awarded": 30, "max_points_awarded": 80}
+      ]
+    }
+  ]
+}

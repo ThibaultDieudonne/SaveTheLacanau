@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-scroll">
+    <div class="card">
+        <a class="back-link" href="/">← Accueil</a>
+        <h2>Terminer Partie</h2>
+
+        {% if games %}
+        <ul class="game-list">
+            {% for g in games %}
+            <li class="game-list-item">
+                <div>
+                    <strong>{{ g.game_name }}</strong>
+                    <span class="badge badge-muted">{{ g.game_id }}</span>
+                    <span class="muted">— {{ g.players | length }} joueur(s)</span>
+                </div>
+                <form method="post" action="/terminer-partie/{{ g.game_id }}"
+                      onsubmit="return confirm('Terminer la partie « {{ g.game_name }} » ?')">
+                    <button type="submit" class="btn btn-sm btn-danger">Terminer</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="muted text-center">Aucune partie active.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

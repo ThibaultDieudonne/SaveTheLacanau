@@ -1,0 +1,37 @@
+{% extends "game/layout.html" %}
+{% block phase_content %}
+<h3>Fin de journée — Résultats</h3>
+
+{% for result in game.current_day.day_results %}
+<div class="result-card {% if result.was_sabotaged %}result-sabotaged{% else %}result-success{% endif %}">
+    <div class="result-activity">{{ result.activity_name }}</div>
+    <div class="result-task">
+        Tâche choisie : <strong>{{ result.chosen_task }}</strong>
+        {% if result.was_sabotaged %}
+        <span class="badge badge-danger">Sabotée</span>
+        {% else %}
+        <span class="badge badge-success">Succès</span>
+        {% endif %}
+    </div>
+    {% if result.was_sabotaged and result.failure_reason %}
+    <div class="result-reason muted">{{ result.failure_reason }}</div>
+    {% elif not result.was_sabotaged %}
+    <div class="result-points">+{{ result.chill_points }} pts chill 🌊</div>
+    {% endif %}
+</div>
+{% endfor %}
+
+{% set already_ready = player_name in game.current_day.continue_ready %}
+{% if already_ready %}
+<div class="alert alert-info">
+    En attente des autres joueurs…
+    ({{ game.current_day.continue_ready | length }}/{{ active_players | length }})
+</div>
+{% elif not player.is_eliminated %}
+<form method="post" action="/parties/{{ game_id }}/{{ player_name | urlencode }}/continuer">
+    <button type="submit" class="btn btn-primary btn-full">Continuer</button>
+</form>
+{% else %}
+<p class="muted">En attente des autres joueurs…</p>
+{% endif %}
+{% endblock %}

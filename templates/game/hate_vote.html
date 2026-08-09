@@ -1,0 +1,38 @@
+{% extends "game/layout.html" %}
+{% block phase_content %}
+<h3>Vote de suspicion</h3>
+
+{% if player.is_eliminated %}
+<p class="muted">Vous observez. Les joueurs actifs sont en train de voter.</p>
+
+{% elif player_name in game.current_day.hate_votes_submitted %}
+<div class="alert alert-info">
+    Vote envoyé. En attente des autres joueurs…
+    ({{ game.current_day.hate_votes_submitted | length }}/{{ active_players | length }})
+</div>
+
+{% else %}
+<p class="muted">
+    Vous pouvez voter contre un ou plusieurs joueurs que vous suspectez d'être des saboteurs.
+    Vous pouvez aussi ne voter pour personne.
+</p>
+
+<form method="post" action="/parties/{{ game_id }}/{{ player_name | urlencode }}/voter-suspicion">
+    <ul class="suspect-list">
+        {% for p in votable_players %}
+        <li>
+            <label class="suspect-card">
+                <input type="checkbox" name="suspects" value="{{ p.name }}">
+                <span class="suspect-name">{{ p.name }}</span>
+                <span class="hate-count">{{ p.hate_counter }} 💢</span>
+            </label>
+        </li>
+        {% endfor %}
+    </ul>
+    {% if not votable_players %}
+    <p class="muted">Aucun autre joueur actif à voter.</p>
+    {% endif %}
+    <button type="submit" class="btn btn-primary btn-full">Envoyer le vote</button>
+</form>
+{% endif %}
+{% endblock %}

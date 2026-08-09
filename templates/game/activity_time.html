@@ -1,0 +1,47 @@
+{% extends "game/layout.html" %}
+{% block phase_content %}
+<h3>Cours de la journée</h3>
+
+{% if player.is_eliminated %}
+<p class="muted">Vous observez la partie en tant qu'éliminé.</p>
+
+{% elif not player_activity_name %}
+<p class="muted">Vous n'êtes assigné à aucune activité ce tour.</p>
+
+{% elif not player_activity %}
+<p class="muted">En attente des données de l'activité…</p>
+
+{% elif player_name in player_activity.votes %}
+{# Already voted #}
+<div class="alert alert-info">
+    Vote enregistré pour <strong>{{ player_activity.votes[player_name] }}</strong>.<br>
+    En attente des autres joueurs dans toutes les activités…
+</div>
+
+{% else %}
+{# Show task voting UI #}
+<p>Activité : <strong>{{ player_activity_name }}</strong></p>
+<p class="muted">Votez pour la tâche que le groupe devrait accomplir aujourd'hui.</p>
+
+<form method="post" action="/parties/{{ game_id }}/{{ player_name | urlencode }}/voter-tache">
+    <ul class="task-vote-list">
+        {% for task in player_activity.tasks %}
+        {% set is_sabotageable = (player.role == 'saboteur') and (task.task_name == player_activity.sabotageable_task) %}
+        <li>
+            <label class="task-card {% if is_sabotageable %}task-sabotageable{% endif %}">
+                <input type="radio" name="task_name" value="{{ task.task_name }}" required>
+                <div class="task-info">
+                    <span class="task-name">{{ task.task_name }}</span>
+                    <span class="task-points">{{ task.points_per_player[player_name] }} pts chill</span>
+                    {% if is_sabotageable %}
+                    <span class="badge badge-danger">Sabotable</span>
+                    {% endif %}
+                </div>
+            </label>
+        </li>
+        {% endfor %}
+    </ul>
+    <button type="submit" class="btn btn-primary btn-full">Voter</button>
+</form>
+{% endif %}
+{% endblock %}

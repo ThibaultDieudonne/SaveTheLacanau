@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-center">
+    <div class="card">
+        <a class="back-link" href="/">← Accueil</a>
+        <h2>Rejoindre Partie</h2>
+
+        {% if error %}
+        <div class="alert alert-error"><p>{{ error }}</p></div>
+        {% endif %}
+
+        <form method="post" action="/rejoindre-partie">
+            <div class="form-group">
+                <label for="game_id">Identifiant de la partie (4 chiffres)</label>
+                <input type="text" id="game_id" name="game_id"
+                       maxlength="4" pattern="\d{4}"
+                       placeholder="0000" inputmode="numeric" autofocus>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Rejoindre cette partie</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

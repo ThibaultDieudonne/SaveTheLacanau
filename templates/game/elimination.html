@@ -1,0 +1,36 @@
+{% extends "game/layout.html" %}
+{% block phase_content %}
+<h3>Révélation</h3>
+
+{% set elim_name = game.current_day.elimination_player %}
+{% set was_saboteur = game.current_day.elimination_was_saboteur %}
+
+<div class="elimination-reveal">
+    <div class="elim-player-name">{{ elim_name }}</div>
+    {% if was_saboteur %}
+    <div class="elim-verdict elim-saboteur">
+        <span class="big-icon">🔥</span>
+        <p>C'était un <strong>Saboteur</strong> !</p>
+        <p class="muted">Il est éliminé de la partie.</p>
+    </div>
+    {% else %}
+    <div class="elim-verdict elim-innocent">
+        <span class="big-icon">🌊</span>
+        <p>Ce n'était <strong>pas</strong> un Saboteur.</p>
+        <p class="muted">La partie continue.</p>
+    </div>
+    {% endif %}
+</div>
+
+{% set already_continued = player_name in game.current_day.elim_continue_ready %}
+{% if already_continued %}
+<div class="alert alert-info">
+    En attente de tous les joueurs…
+    ({{ game.current_day.elim_continue_ready | length }}/{{ game.players | length }})
+</div>
+{% else %}
+<form method="post" action="/parties/{{ game_id }}/{{ player_name | urlencode }}/continuer-elimination">
+    <button type="submit" class="btn btn-primary btn-full">Continuer</button>
+</form>
+{% endif %}
+{% endblock %}

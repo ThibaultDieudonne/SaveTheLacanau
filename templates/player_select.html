@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-center">
+    <div class="card">
+        <h2>Choisir votre nom</h2>
+        <p class="muted">Partie : <strong>{{ game.game_name }}</strong>
+            &nbsp;<span class="badge badge-muted">{{ game_id }}</span></p>
+
+        <ul class="player-name-list">
+            {% for name in game.players %}
+            {% if name in game.players_joined and game.phase != 'lobby' %}
+            {# after game started, all names lead to reconnect #}
+            <li>
+                <a class="player-name-btn taken" href="/parties/{{ game_id }}/{{ name | urlencode }}">
+                    {{ name }}
+                    <span class="badge badge-success">En jeu</span>
+                </a>
+            </li>
+            {% elif name in game.players_joined %}
+            <li>
+                <a class="player-name-btn taken" href="/parties/{{ game_id }}/{{ name | urlencode }}">
+                    {{ name }}
+                    <span class="badge badge-muted">Pris</span>
+                </a>
+            </li>
+            {% else %}
+            <li>
+                <form method="post" action="/parties/{{ game_id }}/rejoindre/{{ name | urlencode }}">
+                    <button type="submit" class="player-name-btn">{{ name }}</button>
+                </form>
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

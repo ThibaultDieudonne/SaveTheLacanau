@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Sauver Lacanau — {{ game.game_name }}{% endblock %}
+{% block content %}
+<div class="game-wrapper">
+
+    {# ── Top progress bars ── #}
+    <div class="top-bars">
+        <div class="bar-row">
+            <span class="bar-label chill-label">🌊 Chill</span>
+            <div class="bar-track">
+                <div class="bar-fill chill-fill"
+                     style="width: {{ [[(game.chill_counter / chill_threshold * 100)|round|int, 0]|max, 100]|min }}%"></div>
+            </div>
+            <span class="bar-value">{{ game.chill_counter }}/{{ chill_threshold }}</span>
+        </div>
+        <div class="bar-row">
+            <span class="bar-label sabotage-label">🔥 Sabotages</span>
+            <div class="bar-track">
+                <div class="bar-fill sabotage-fill"
+                     style="width: {{ [[(game.sabotaged_activity_counter / sabotage_threshold * 100)|round|int, 0]|max, 100]|min }}%"></div>
+            </div>
+            <span class="bar-value">{{ game.sabotaged_activity_counter }}/{{ sabotage_threshold }}</span>
+        </div>
+    </div>
+
+    {# ── Role badge ── #}
+    <div class="role-section">
+        {% if player.role == 'saboteur' %}
+        <div class="role-badge role-saboteur">Saboteur</div>
+        <div class="saboteur-team">
+            Vos complices :
+            {% for s in game.saboteurs %}
+            <span class="badge badge-danger">{{ s }}</span>
+            {% endfor %}
+        </div>
+        {% elif player.role == 'chill_guy' %}
+        <div class="role-badge role-chill">Chilleur</div>
+        {% else %}
+        <div class="role-badge role-special">{{ player.role }}</div>
+        {% endif %}
+
+        {% if player.is_eliminated %}
+        <div class="eliminated-banner">Vous avez été éliminé — observez la partie.</div>
+        {% endif %}
+    </div>
+
+    {# ── Phase content ── #}
+    <div class="phase-content">
+        {% block phase_content %}{% endblock %}
+    </div>
+
+    {# ── Bottom: hate counters + elimination timer ── #}
+    <div class="bottom-stats">
+        <div class="elim-timer">
+            {% if days_until_elimination == 0 %}
+            ⚡ Élimination aujourd'hui !
+            {% else %}
+            Élimination dans <strong>{{ days_until_elimination }}</strong> jour(s)
+            {% endif %}
+        </div>
+        <div class="hate-counters">
+            {% for p in game.players.values() %}
+            <div class="hate-entry {% if p.is_eliminated %}hate-eliminated{% endif %}">
+                <span class="hate-name">{{ p.name }}</span>
+                <span class="hate-count">{{ p.hate_counter }} 💢</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{# ── Day indicator ── #}
+{% if game.current_day %}
+<div class="day-chip">Journée {{ game.current_day.day_number }}</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    const gameId = "{{ game_id }}";
+    const playerName = "{{ player_name }}";
+    let ws;
+    function connect() {
+        ws = new WebSocket("ws://" + location.host + "/ws/" + gameId + "/" + encodeURIComponent(playerName));
+        ws.onmessage = function (e) {
+            try {
+                const msg = JSON.parse(e.data);
+                if (msg.type === "refresh") window.location.reload();
+            } catch (_) {}
+        };
+        ws.onclose = function () { setTimeout(connect, 2000); };
+    }
+    connect();
+})();
+</script>
+{% endblock %}

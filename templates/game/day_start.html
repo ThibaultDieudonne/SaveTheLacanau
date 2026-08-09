@@ -1,0 +1,38 @@
+{% extends "game/layout.html" %}
+{% block phase_content %}
+<h3>Début de journée</h3>
+<p class="muted">Choisissez votre activité pour aujourd'hui.</p>
+
+{% set already_selected = game.current_day.activity_selections.get(player_name) %}
+
+{% if player.is_eliminated %}
+<p class="muted">Vous observez la partie en tant qu'éliminé.</p>
+
+{% elif already_selected %}
+<div class="alert alert-info">
+    Vous avez choisi <strong>{{ already_selected }}</strong>.<br>
+    En attente des autres joueurs…
+    ({{ game.current_day.activity_selections | length }}/{{ active_players | length }})
+</div>
+
+{% else %}
+<ul class="activity-pick-list">
+    {% for activity in game.available_activities %}
+    {% set is_blocked = (player.last_activity == activity.name) %}
+    <li>
+        {% if is_blocked %}
+        <div class="activity-btn disabled" title="Même activité qu'hier">
+            {{ activity.name }}
+            <span class="badge badge-muted">Déjà fait hier</span>
+        </div>
+        {% else %}
+        <form method="post" action="/parties/{{ game_id }}/{{ player_name | urlencode }}/choisir-activite">
+            <input type="hidden" name="activity" value="{{ activity.name }}">
+            <button type="submit" class="activity-btn">{{ activity.name }}</button>
+        </form>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

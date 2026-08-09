@@ -1,0 +1,47 @@
+{% extends "game/layout.html" %}
+{% block phase_content %}
+<div class="game-over-screen">
+    <div class="wave-icon big-wave">🌊</div>
+    <h2 class="game-over-message">{{ game.winner_message }}</h2>
+
+    {% if game.winner == 'saboteurs' %}
+    <p class="muted">Les saboteurs ont triomphé.</p>
+    {% else %}
+    <p class="muted">Lacanau est sauvé !</p>
+    {% endif %}
+
+    <div class="final-stats">
+        <div class="stat-row">
+            <span>Points Chill accumulés</span>
+            <strong>{{ game.chill_counter }}</strong>
+        </div>
+        <div class="stat-row">
+            <span>Activités sabotées</span>
+            <strong>{{ game.sabotaged_activity_counter }}</strong>
+        </div>
+        <div class="stat-row">
+            <span>Journées jouées</span>
+            <strong>{{ game.current_day.day_number if game.current_day else '—' }}</strong>
+        </div>
+    </div>
+
+    <div class="roles-reveal">
+        <h3>Rôles des joueurs</h3>
+        <ul>
+            {% for p in game.players.values() %}
+            <li class="role-reveal-row {% if p.role == 'saboteur' %}reveal-saboteur{% endif %}">
+                <span>{{ p.name }}</span>
+                <span>
+                    {% if p.role == 'saboteur' %}Saboteur
+                    {% elif p.role == 'chill_guy' %}Chilleur
+                    {% else %}{{ p.role }}{% endif %}
+                </span>
+                {% if p.is_eliminated %}<span class="badge badge-muted">Éliminé</span>{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <a class="btn btn-primary" href="/">Retour à l'accueil</a>
+</div>
+{% endblock %}
