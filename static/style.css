@@ -489,17 +489,13 @@ legend   { padding: 0 0.5rem; font-size: 0.875rem; font-weight: 600; color: var(
 .hate-name { color: var(--muted); }
 .hate-count { color: var(--danger); font-weight: 600; }
 
-/* ── Day chip ──────────────────────────────────────────────────── */
-.day-chip {
-    position: fixed;
-    top: 0.6rem;
-    right: 0.6rem;
-    background: rgba(56,189,248,0.15);
-    border: 1px solid rgba(56,189,248,0.3);
-    color: var(--primary);
-    font-size: 0.75rem;
+/* ── Day label inside top bar ──────────────────────────────────── */
+.day-label {
+    font-size: 0.7rem;
     font-weight: 700;
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-    z-index: 20;
+    color: var(--primary);
+    text-align: right;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.75;
 }

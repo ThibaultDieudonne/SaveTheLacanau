@@ -5,6 +5,9 @@
 
     {# ── Top progress bars ── #}
     <div class="top-bars">
+        {% if game.current_day %}
+        <div class="day-label">Journée {{ game.current_day.day_number }}</div>
+        {% endif %}
         <div class="bar-row">
             <span class="bar-label chill-label">🌊 Chill</span>
             <div class="bar-track">
@@ -69,10 +72,6 @@
     </div>
 </div>
 
-{# ── Day indicator ── #}
-{% if game.current_day %}
-<div class="day-chip">Journée {{ game.current_day.day_number }}</div>
-{% endif %}
 {% endblock %}
 
 {% block scripts %}
@@ -82,7 +81,8 @@
     const playerName = "{{ player_name }}";
     let ws;
     function connect() {
-        ws = new WebSocket("ws://" + location.host + "/ws/" + gameId + "/" + encodeURIComponent(playerName));
+        const wsProto = location.protocol === "https:" ? "wss:" : "ws:";
+        ws = new WebSocket(wsProto + "//" + location.host + "/ws/" + gameId + "/" + encodeURIComponent(playerName));
         ws.onmessage = function (e) {
             try {
                 const msg = JSON.parse(e.data);

@@ -375,8 +375,8 @@ async def player_ready(game_id: str, player_name: str):
 
     active = logic.get_active_players(game)
     if game.current_day.continue_ready >= {p.name for p in active}:
-        # Check if hate vote is needed (sabotages before this day)
-        if game.sabotage_counter_at_day_start > 0:
+        # Hate vote triggers if any sabotage has occurred so far (including today)
+        if game.sabotaged_activity_counter > 0:
             game.phase = PHASE_HATE_VOTE
         else:
             _advance_to_next_day_or_elimination(game)

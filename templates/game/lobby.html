@@ -33,7 +33,8 @@
     const playerName = "{{ player_name }}";
     let ws;
     function connect() {
-        ws = new WebSocket("ws://" + location.host + "/ws/" + gameId + "/" + encodeURIComponent(playerName));
+        const wsProto = location.protocol === "https:" ? "wss:" : "ws:";
+        ws = new WebSocket(wsProto + "//" + location.host + "/ws/" + gameId + "/" + encodeURIComponent(playerName));
         ws.onmessage = function (e) {
             try {
                 const msg = JSON.parse(e.data);
