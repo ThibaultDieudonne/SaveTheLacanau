@@ -39,7 +39,7 @@
         {% elif player.role == 'chill_guy' %}
         <div class="role-badge role-chill">Chilleur</div>
         {% else %}
-        <div class="role-badge role-special">{{ player.role }}</div>
+        <div class="role-badge role-special">{{ player.role }} ({{ role_to_activity[player.role] }})</div>
         {% endif %}
 
         {% if player.is_eliminated %}

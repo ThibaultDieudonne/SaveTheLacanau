@@ -280,6 +280,8 @@ def process_elimination(game: GameState) -> tuple[str, bool]:
     was_saboteur = target.name in game.saboteurs
     if was_saboteur:
         target.is_eliminated = True
+    else:
+        target.hate_counter = 0
 
     game.current_day.elimination_player = target.name
     game.current_day.elimination_was_saboteur = was_saboteur
