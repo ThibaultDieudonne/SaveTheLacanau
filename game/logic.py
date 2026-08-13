@@ -176,6 +176,13 @@ def process_day_end(game: GameState) -> None:
         if sabotaged:
             game.sabotaged_activity_counter += 1
             new_sabotages += 1
+            game.history.append({
+                "day_number": day.day_number,
+                "activity_name": activity_name,
+                "task_name": chosen,
+                "failure_reason": failure_reason,
+                "players": list(da.players),
+            })
         else:
             game.chill_counter += chill_pts
 

@@ -499,3 +499,109 @@ legend   { padding: 0 0.5rem; font-size: 0.875rem; font-weight: 600; color: var(
     text-transform: uppercase;
     opacity: 0.75;
 }
+
+/* ── Top bar actions row ───────────────────────────────────────── */
+.top-bar-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0.25rem;
+}
+
+/* ── Role toggle ───────────────────────────────────────────────── */
+.role-toggle-btn {
+    flex-shrink: 0;
+}
+.role-content {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.role-content[hidden] { display: none; }
+
+/* ── Sabotage history panel ────────────────────────────────────── */
+.sabotage-history-panel {
+    background: rgba(13,27,42,0.95);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+    z-index: 9;
+}
+.sabotage-history-panel[hidden] { display: none; }
+.history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+}
+.history-header h4 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--danger);
+    margin: 0;
+}
+.history-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 40vh;
+    overflow-y: auto;
+}
+.history-entry {
+    background: var(--bg2);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 8px;
+    padding: 0.6rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-size: 0.85rem;
+}
+.history-meta {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+}
+.history-day {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.history-activity {
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+.history-task { font-weight: 600; color: var(--danger); }
+.history-reason { font-style: italic; }
+.history-players {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+/* ── Players pending list in waiting alerts ────────────────────── */
+.players-pending {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+/* ── Sabotageable task: hidden until task is selected ──────────── */
+/* Override default highlight — shown only after selection */
+.task-card.task-sabotageable { border-color: var(--border); }
+.task-vote-list.selection-made .task-card.task-sabotageable { border-color: rgba(239,68,68,0.4); }
+.task-vote-list.selection-made .task-card.task-sabotageable:has(input:checked) {
+    border-color: var(--danger);
+    background: rgba(239,68,68,0.07);
+}
+/* Hide the "Sabotable" badge until a radio is clicked */
+.sabotage-hint-badge { display: none; }
+.task-vote-list.selection-made .sabotage-hint-badge { display: inline-block; }

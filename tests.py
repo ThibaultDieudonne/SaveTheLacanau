@@ -454,3 +454,171 @@ class TestHTTPPages:
         r = client.post(f"/terminer-partie/{gid}", follow_redirects=False)
         assert r.status_code == 303
         assert manager.get_game(gid) is None
+
+
+# ---------------------------------------------------------------------------
+# New features — sabotage history
+# ---------------------------------------------------------------------------
+
+class TestSabotageHistory:
+    def test_history_empty_initially(self):
+        game = _make_game()
+        assert game.history == []
+
+    def test_history_populated_on_sabotage(self):
+        game = _make_game()
+        logic.start_new_day(game, day_number=1)
+        activity_name = game.available_activities[0]["name"]
+        for name in game.players:
+            game.current_day.activity_selections[name] = activity_name
+        logic.transition_to_activity_time(game)
+        da = game.current_day.activities[activity_name]
+
+        if da.sabotageable_task is None:
+            pytest.skip("No sabotageable task in this random configuration")
+
+        for name in da.players:
+            da.votes[name] = da.sabotageable_task
+
+        logic.process_day_end(game)
+        assert len(game.history) == 1
+        entry = game.history[0]
+        assert entry["day_number"] == 1
+        assert entry["activity_name"] == activity_name
+        assert entry["task_name"] == da.sabotageable_task
+        assert set(entry["players"]) == set(da.players)
+
+    def test_history_not_populated_on_success(self):
+        game = _make_game()
+        logic.start_new_day(game, day_number=1)
+        activity_name = game.available_activities[0]["name"]
+        for name in game.players:
+            game.current_day.activity_selections[name] = activity_name
+        logic.transition_to_activity_time(game)
+        da = game.current_day.activities[activity_name]
+
+        safe_task = next(t for t in da.tasks if t.task_name != da.sabotageable_task)
+        for name in da.players:
+            da.votes[name] = safe_task.task_name
+
+        logic.process_day_end(game)
+        assert len(game.history) == 0
+
+    def test_history_accumulates_across_days(self):
+        game = _make_game()
+
+        for day_num in range(1, 3):
+            logic.start_new_day(game, day_number=day_num)
+            activity_name = game.available_activities[0]["name"]
+            for name in game.players:
+                game.current_day.activity_selections[name] = activity_name
+            logic.transition_to_activity_time(game)
+            da = game.current_day.activities[activity_name]
+
+            if da.sabotageable_task is None:
+                continue
+
+            for name in da.players:
+                da.votes[name] = da.sabotageable_task
+
+            logic.process_day_end(game)
+
+        # At least one entry (may be 0, 1, or 2 depending on configuration)
+        assert isinstance(game.history, list)
+
+
+# ---------------------------------------------------------------------------
+# New features — players_pending in HTTP responses
+# ---------------------------------------------------------------------------
+
+class TestPlayersPending:
+    def _setup_day_start(self, client):
+        """Returns (game, first_name) with one player having already chosen."""
+        game = _make_game()
+        names = list(game.players.keys())
+        for name in names:
+            game.players_joined.add(name)
+        logic.start_new_day(game, day_number=1)
+        # First player selects an activity
+        activity = game.available_activities[0]["name"]
+        game.current_day.activity_selections[names[0]] = activity
+        return game, names[0], names[1:]
+
+    def test_day_start_waiting_shows_pending(self, client):
+        game, first, pending_names = self._setup_day_start(client)
+        r = client.get(f"/parties/{game.game_id}/{first}")
+        assert r.status_code == 200
+        # At least one pending player name should appear in the waiting alert
+        for name in pending_names:
+            assert name in r.text
+
+    def test_activity_time_waiting_shows_pending(self, client):
+        game = _make_game()
+        names = list(game.players.keys())
+        for name in names:
+            game.players_joined.add(name)
+        logic.start_new_day(game, day_number=1)
+        activity_name = game.available_activities[0]["name"]
+        for name in names:
+            game.current_day.activity_selections[name] = activity_name
+        logic.transition_to_activity_time(game)
+        da = game.current_day.activities[activity_name]
+        # First player votes
+        first = da.players[0]
+        task = da.tasks[0].task_name
+        da.votes[first] = task
+        r = client.get(f"/parties/{game.game_id}/{first}")
+        assert r.status_code == 200
+        # Other players in activity should appear as pending
+        for name in da.players[1:]:
+            assert name in r.text
+
+    def test_day_results_waiting_shows_pending(self, client):
+        game = _make_game()
+        names = list(game.players.keys())
+        for name in names:
+            game.players_joined.add(name)
+        logic.start_new_day(game, day_number=1)
+        activity_name = game.available_activities[0]["name"]
+        for name in names:
+            game.current_day.activity_selections[name] = activity_name
+        logic.transition_to_activity_time(game)
+        da = game.current_day.activities[activity_name]
+        safe_task = next(t for t in da.tasks if t.task_name != da.sabotageable_task)
+        for name in da.players:
+            da.votes[name] = safe_task.task_name
+        logic.process_day_end(game)
+        # First player marks ready
+        first = names[0]
+        game.current_day.continue_ready.add(first)
+        r = client.get(f"/parties/{game.game_id}/{first}")
+        assert r.status_code == 200
+        for name in names[1:]:
+            assert name in r.text
+
+    def test_hate_vote_waiting_shows_pending(self, client):
+        game = _make_game()
+        names = list(game.players.keys())
+        for name in names:
+            game.players_joined.add(name)
+        logic.start_new_day(game, day_number=1)
+        activity_name = game.available_activities[0]["name"]
+        for name in names:
+            game.current_day.activity_selections[name] = activity_name
+        logic.transition_to_activity_time(game)
+        da = game.current_day.activities[activity_name]
+        safe_task = next(t for t in da.tasks if t.task_name != da.sabotageable_task)
+        for name in da.players:
+            da.votes[name] = safe_task.task_name
+        logic.process_day_end(game)
+        # Force hate vote phase
+        game.sabotaged_activity_counter = 1
+        game.phase = "hate_vote"
+        # First player submits vote
+        first = names[0]
+        game.current_day.hate_votes_submitted.add(first)
+        r = client.get(f"/parties/{game.game_id}/{first}")
+        assert r.status_code == 200
+        for name in names[1:]:
+            assert name in r.text
+

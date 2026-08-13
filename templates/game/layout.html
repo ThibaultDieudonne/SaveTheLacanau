@@ -24,27 +24,65 @@
             </div>
             <span class="bar-value">{{ game.sabotaged_activity_counter }}/{{ sabotage_threshold }}</span>
         </div>
+        <div class="top-bar-actions">
+            <button class="btn btn-sm btn-outline" id="historyToggle" title="Historique des sabotages">🔥 Historique</button>
+        </div>
+    </div>
+
+    {# ── Sabotage history panel (hidden by default) ── #}
+    <div id="sabotage-history-panel" class="sabotage-history-panel" hidden>
+        <div class="history-header">
+            <h4>Historique des sabotages</h4>
+            <button class="btn btn-sm btn-outline" id="historyClose">✕</button>
+        </div>
+        {% if game.history %}
+        <ul class="history-list">
+            {% for entry in game.history %}
+            <li class="history-entry">
+                <div class="history-meta">
+                    <span class="history-day">Jour {{ entry.day_number }}</span>
+                    <span class="history-activity">{{ entry.activity_name }}</span>
+                </div>
+                <div class="history-task">Tâche : <strong>{{ entry.task_name }}</strong></div>
+                {% if entry.failure_reason %}
+                <div class="history-reason muted">{{ entry.failure_reason }}</div>
+                {% endif %}
+                <div class="history-players">
+                    Joueurs impliqués :
+                    {% for p in entry.players %}
+                    <span class="badge badge-muted">{{ p }}</span>
+                    {% endfor %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="muted">Aucun sabotage pour l'instant.</p>
+        {% endif %}
     </div>
 
     {# ── Role badge ── #}
     <div class="role-section">
-        {% if player.role == 'saboteur' %}
-        <div class="role-badge role-saboteur">Saboteur</div>
-        <div class="saboteur-team">
-            Les complices :
-            {% for s in game.saboteurs %}
-            <span class="badge badge-danger">{{ s }}</span>
-            {% endfor %}
-        </div>
-        {% elif player.role == 'chill_guy' %}
-        <div class="role-badge role-chill">Chilleur</div>
-        {% else %}
-        <div class="role-badge role-special">{{ player.role }} ({{ role_to_activity[player.role] }})</div>
-        {% endif %}
+        <button class="btn btn-sm btn-outline role-toggle-btn" id="roleToggle" title="Masquer/Afficher votre rôle">👁 Rôle</button>
+        <div id="role-content" class="role-content">
+            {% if player.role == 'saboteur' %}
+            <div class="role-badge role-saboteur">Saboteur</div>
+            <div class="saboteur-team">
+                Les complices :
+                {% for s in game.saboteurs %}
+                <span class="badge badge-danger">{{ s }}</span>
+                {% endfor %}
+            </div>
+            {% elif player.role == 'chill_guy' %}
+            <div class="role-badge role-chill">Chilleur</div>
+            {% else %}
+            <div class="role-badge role-special">{{ player.role }} ({{ role_to_activity[player.role] }})</div>
+            {% endif %}
 
-        {% if player.is_eliminated %}
-        <div class="eliminated-banner">Vous avez été éliminé — observez la partie.</div>
-        {% endif %}
+            {% if player.is_eliminated %}
+            <div class="eliminated-banner">Vous avez été éliminé — observez la partie.</div>
+            {% endif %}
+        </div>
     </div>
 
     {# ── Phase content ── #}
@@ -92,6 +130,36 @@
         ws.onclose = function () { setTimeout(connect, 2000); };
     }
     connect();
+
+    // Role toggle (persisted in localStorage per player)
+    const roleToggle = document.getElementById('roleToggle');
+    const roleContent = document.getElementById('role-content');
+    const storageKey = 'roleHidden_' + encodeURIComponent(playerName);
+    if (roleToggle && roleContent) {
+        if (localStorage.getItem(storageKey) === '1') {
+            roleContent.hidden = true;
+        }
+        roleToggle.addEventListener('click', function () {
+            const nowHidden = !roleContent.hidden;
+            roleContent.hidden = nowHidden;
+            localStorage.setItem(storageKey, nowHidden ? '1' : '0');
+        });
+    }
+
+    // Sabotage history panel toggle
+    const historyToggle = document.getElementById('historyToggle');
+    const historyClose = document.getElementById('historyClose');
+    const historyPanel = document.getElementById('sabotage-history-panel');
+    if (historyToggle && historyPanel) {
+        historyToggle.addEventListener('click', function () {
+            historyPanel.hidden = !historyPanel.hidden;
+        });
+    }
+    if (historyClose && historyPanel) {
+        historyClose.addEventListener('click', function () {
+            historyPanel.hidden = true;
+        });
+    }
 })();
 </script>
 {% endblock %}

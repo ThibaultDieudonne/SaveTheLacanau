@@ -27,6 +27,14 @@
 <div class="alert alert-info">
     En attente de tous les joueurs…
     ({{ game.current_day.elim_continue_ready | length }}/{{ game.players | length }})
+    {% if players_pending %}
+    <div class="players-pending">
+        En attente de :
+        {% for p in players_pending %}
+        <span class="badge badge-muted">{{ p.name }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
 </div>
 {% else %}
 <form method="post" action="/parties/{{ game_id }}/{{ player_name | urlencode }}/continuer-elimination">

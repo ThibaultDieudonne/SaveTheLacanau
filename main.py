@@ -105,6 +105,9 @@ def _render_game_page(request: Request, game_id: str, player_name: str):
     if phase == PHASE_LOBBY:
         return templates.TemplateResponse(request, "game/lobby.html", ctx)
     if phase == PHASE_DAY_START:
+        day = game.current_day
+        active = logic.get_active_players(game)
+        ctx["players_pending"] = [p for p in active if p.name not in day.activity_selections]
         return templates.TemplateResponse(request, "game/day_start.html", ctx)
     if phase == PHASE_ACTIVITY_TIME:
         day = game.current_day
@@ -113,18 +116,28 @@ def _render_game_page(request: Request, game_id: str, player_name: str):
         player_activity = day.activities.get(player_activity_name) if player_activity_name else None
         ctx["player_activity_name"] = player_activity_name
         ctx["player_activity"] = player_activity
+        active = logic.get_active_players(game)
+        players_voted = set()
+        for _da in day.activities.values():
+            players_voted.update(_da.votes.keys())
+        ctx["players_pending"] = [p for p in active if p.name not in players_voted]
         return templates.TemplateResponse(request, "game/activity_time.html", ctx)
     if phase == PHASE_DAY_RESULTS:
+        day = game.current_day
+        active = logic.get_active_players(game)
+        ctx["players_pending"] = [p for p in active if p.name not in day.continue_ready]
         return templates.TemplateResponse(request, "game/day_results.html", ctx)
     if phase == PHASE_HATE_VOTE:
+        day = game.current_day
+        active = logic.get_active_players(game)
         # players that can be voted against: active, non-eliminated, not self
-        votable = [
-            p for p in logic.get_active_players(game)
-            if p.name != player_name
-        ]
+        votable = [p for p in active if p.name != player_name]
         ctx["votable_players"] = votable
+        ctx["players_pending"] = [p for p in active if p.name not in day.hate_votes_submitted]
         return templates.TemplateResponse(request, "game/hate_vote.html", ctx)
     if phase == PHASE_ELIMINATION:
+        day = game.current_day
+        ctx["players_pending"] = [p for p in game.players.values() if p.name not in day.elim_continue_ready]
         return templates.TemplateResponse(request, "game/elimination.html", ctx)
     if phase == PHASE_GAME_OVER:
         return templates.TemplateResponse(request, "game/game_over.html", ctx)
