@@ -32,18 +32,14 @@
 <p class="muted">Votez pour la tâche que le groupe devrait accomplir aujourd'hui.</p>
 
 <form method="post" action="/parties/{{ game_id }}/{{ player_name | urlencode }}/voter-tache">
-    <ul class="task-vote-list" id="taskVoteList">
+    <ul class="task-vote-list">
         {% for task in player_activity.tasks %}
-        {% set is_sabotageable = (player.role == 'saboteur') and (task.task_name == player_activity.sabotageable_task) %}
         <li>
-            <label class="task-card {% if is_sabotageable %}task-sabotageable{% endif %}">
+            <label class="task-card">
                 <input type="radio" name="task_name" value="{{ task.task_name }}" required>
                 <div class="task-info">
                     <span class="task-name">{{ task.task_name }}</span>
                     <span class="task-points">{{ task.points_per_player[player_name] }} points de chill</span>
-                    {% if is_sabotageable %}
-                    <span class="badge badge-danger sabotage-hint-badge">Sabotable</span>
-                    {% endif %}
                 </div>
             </label>
         </li>
@@ -54,18 +50,3 @@
 {% endif %}
 {% endblock %}
 
-{% block scripts %}
-{{ super() }}
-<script>
-(function () {
-    const list = document.getElementById('taskVoteList');
-    if (list) {
-        list.querySelectorAll('input[type="radio"]').forEach(function (radio) {
-            radio.addEventListener('change', function () {
-                list.classList.add('selection-made');
-            });
-        });
-    }
-})();
-</script>
-{% endblock %}

@@ -98,6 +98,7 @@ def _render_game_page(request: Request, game_id: str, player_name: str):
         "days_until_elimination": _days_until_elimination(game),
         "active_players": logic.get_active_players(game),
         "role_to_activity": {a["special_role"]: a["name"] for a in game.available_activities},
+        "sabotage_target": None,
     }
 
     phase = game.phase
@@ -116,6 +117,8 @@ def _render_game_page(request: Request, game_id: str, player_name: str):
         player_activity = day.activities.get(player_activity_name) if player_activity_name else None
         ctx["player_activity_name"] = player_activity_name
         ctx["player_activity"] = player_activity
+        if player_activity and player.role == ROLE_SABOTEUR:
+            ctx["sabotage_target"] = player_activity.sabotageable_task
         active = logic.get_active_players(game)
         players_voted = set()
         for _da in day.activities.values():

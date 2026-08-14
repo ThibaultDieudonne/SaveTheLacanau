@@ -358,8 +358,6 @@ legend   { padding: 0 0.5rem; font-size: 0.875rem; font-weight: 600; color: var(
     transition: border-color 0.15s;
 }
 .task-card:has(input:checked) { border-color: var(--primary); background: rgba(56,189,248,0.07); }
-.task-card.task-sabotageable  { border-color: rgba(239,68,68,0.4); }
-.task-card.task-sabotageable:has(input:checked) { border-color: var(--danger); background: rgba(239,68,68,0.07); }
 .task-card input[type="radio"] { accent-color: var(--primary); width: 18px; height: 18px; flex-shrink: 0; }
 .task-info { display: flex; flex-direction: column; gap: 0.2rem; flex: 1; }
 .task-name   { font-weight: 600; }
@@ -594,14 +592,26 @@ legend   { padding: 0 0.5rem; font-size: 0.875rem; font-weight: 600; color: var(
     font-size: 0.85rem;
 }
 
-/* ── Sabotageable task: hidden until task is selected ──────────── */
-/* Override default highlight — shown only after selection */
-.task-card.task-sabotageable { border-color: var(--border); }
-.task-vote-list.selection-made .task-card.task-sabotageable { border-color: rgba(239,68,68,0.4); }
-.task-vote-list.selection-made .task-card.task-sabotageable:has(input:checked) {
-    border-color: var(--danger);
-    background: rgba(239,68,68,0.07);
+/* ── Sabotage target hint in role panel ───────────────────────── */
+.sabotage-target-hint {
+    width: 100%;
+    background: rgba(239,68,68,0.12);
+    border: 1px solid rgba(239,68,68,0.35);
+    color: #f87171;
+    border-radius: 6px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
 }
-/* Hide the "Sabotable" badge until a radio is clicked */
-.sabotage-hint-badge { display: none; }
-.task-vote-list.selection-made .sabotage-hint-badge { display: inline-block; }
+.sabotage-target-none {
+    background: rgba(107,139,170,0.1);
+    border-color: rgba(107,139,170,0.25);
+    color: var(--muted);
+}
+
+/* ── Bottom menu link ──────────────────────────────────────────── */
+.bottom-menu-link {
+    text-align: center;
+    margin-top: 0.5rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--border);
+}

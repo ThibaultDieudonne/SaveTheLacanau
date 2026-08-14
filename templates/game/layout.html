@@ -73,6 +73,15 @@
                 <span class="badge badge-danger">{{ s }}</span>
                 {% endfor %}
             </div>
+            {% if sabotage_target %}
+            <div class="sabotage-target-hint">
+                🎯 Tâche à saboter : <strong>{{ sabotage_target }}</strong>
+            </div>
+            {% elif sabotage_target is not none %}
+            <div class="sabotage-target-hint sabotage-target-none">
+                Aucune tâche sabotable cette activité.
+            </div>
+            {% endif %}
             {% elif player.role == 'chill_guy' %}
             <div class="role-badge role-chill">Chilleur</div>
             {% else %}
@@ -106,6 +115,9 @@
                 <span class="hate-count">{{ p.hate_counter }} 💢</span>
             </div>
             {% endfor %}
+        </div>
+        <div class="bottom-menu-link">
+            <a href="/" class="back-link">← Menu principal</a>
         </div>
     </div>
 </div>
